@@ -9,4 +9,12 @@
   <f:entry title="${%Schedule}" field="parameterizedSpecification">
     <f:textarea />
   </f:entry>
+  <f:advanced>
+  <f:entry title="first sep" field="firstSep">
+    <f:textbox/>
+  </f:entry>
+    <f:entry title="parameter sep" field="paramSep">
+    <f:textbox/>
+  </f:entry>
+  </f:advanced>
 </j:jelly>
