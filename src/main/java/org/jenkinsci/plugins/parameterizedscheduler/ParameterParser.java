@@ -16,12 +16,12 @@ public class ParameterParser {
 	/**
 	 * if ever changed, documentation and messages will need to be updated as well
 	 */
-	private static final String PARAMETER_SEPARATOR = "%";
-	private static final String NAME_VALUE_SEPARATOR = "=";
-	private static final String PAIR_SEPARATOR = ";";
+	protected static final String PARAMETER_SEPARATOR = "%";
+	protected static final String NAME_VALUE_SEPARATOR = "=";
+	protected static final String PAIR_SEPARATOR = ";";
 
 	/**
-	 * 
+	 *
 	 * @param nameValuePairFormattedString of name=value;other=value name value pairs
 	 * @return
 	 */
@@ -35,6 +35,21 @@ public class ParameterParser {
 			clean = clean.substring(0, clean.length() - 1);
 		}
 		return Splitter.on(PAIR_SEPARATOR).trimResults().withKeyValueSeparator(NAME_VALUE_SEPARATOR).split(clean);
+	}
+
+	public Map<String, String> parse(String nameValuePairFormattedString, String paramSep) {
+		if(StringUtils.isEmpty(paramSep)){
+			return parse(nameValuePairFormattedString);
+		}
+
+		if (StringUtils.isBlank(nameValuePairFormattedString)) {//
+			return Maps.<String, String> newHashMap();
+		}
+		String clean = nameValuePairFormattedString.trim();
+		if (nameValuePairFormattedString.endsWith(paramSep)) {
+			clean = clean.substring(0, clean.length() - 1);
+		}
+		return Splitter.on(paramSep).trimResults().withKeyValueSeparator(NAME_VALUE_SEPARATOR).split(clean);
 	}
 
 	public String checkSanity(String cronTabSpec, ParametersDefinitionProperty parametersDefinitionProperty) {
