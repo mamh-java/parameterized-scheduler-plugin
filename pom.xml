@@ -9,12 +9,12 @@
 	</parent>
 
 	<artifactId>parameterized-scheduler</artifactId>
-	<version>0.9-SNAPSHOT</version>
+	<version>0.9.1</version>
 	<packaging>hpi</packaging>
 
 	<properties>
 		<java.level>8</java.level>
-		<jenkins.version>2.60.3</jenkins.version>
+		<jenkins.version>2.176.1</jenkins.version>
 	</properties>
 
 	<name>Parameterized Scheduler</name>
