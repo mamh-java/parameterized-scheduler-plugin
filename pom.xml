@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>parameterized-scheduler</artifactId>
-	<version>0.9.1</version>
+	<version>0.9</version>
 	<packaging>hpi</packaging>
 
 	<properties>
@@ -19,7 +19,7 @@
 
 	<name>Parameterized Scheduler</name>
 	<description>Lets you define many cron-like format but with additional parameters for each definition</description>
-	<url>https://wiki.jenkins-ci.org/display/JENKINS/Parameterized+Scheduler+Plugin</url>
+    <url>https://github.com/mamh-java/parameterized-scheduler-plugin</url>
 	<licenses>
 		<license>
 			<name>MIT License</name>
@@ -41,7 +41,7 @@
 		<connection>scm:git:git://github.com/jenkinsci/parameterized-scheduler-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/parameterized-scheduler-plugin.git</developerConnection>
 		<url>https://github.com/jenkinsci/parameterized-scheduler-plugin</url>
-		<tag>parameterized-scheduler-0.6</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<repositories>
