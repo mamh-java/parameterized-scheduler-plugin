@@ -32,11 +32,19 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 	private static final Logger LOGGER = Logger.getLogger(ParameterizedTimerTrigger.class.getName());
 	private transient ParameterizedCronTabList cronTabList;
 	private final String parameterizedSpecification;
+	private final String firstDelimiter;
+	private final String parameterDelimiter;
 
 	@DataBoundConstructor
-	public ParameterizedTimerTrigger(String parameterizedSpecification) throws ANTLRException {
+	public ParameterizedTimerTrigger(String parameterizedSpecification, String firstDelimiter, String parameterDelimiter) throws ANTLRException {
 		this.parameterizedSpecification = parameterizedSpecification;
-		this.cronTabList = ParameterizedCronTabList.create(parameterizedSpecification);
+		this.firstDelimiter = firstDelimiter;
+		this.parameterDelimiter = parameterDelimiter;
+		this.cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, firstDelimiter, parameterDelimiter);
+	}
+
+	public ParameterizedTimerTrigger(String parameterizedSpecification) throws ANTLRException {
+		this(parameterizedSpecification, ParameterParser.PARAMETER_SEPARATOR, ParameterParser.PAIR_SEPARATOR);
 	}
 
 	@Override
@@ -101,7 +109,7 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 		this.job = project;
 
 		try {// reparse the tabs with the job as the hash
-			cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, Hash.from(project.getFullName()));
+			cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, firstDelimiter, parameterDelimiter, Hash.from(project.getFullName()));
 		} catch (ANTLRException e) {
 			// this shouldn't fail because we've already parsed stuff in the constructor,
 			// so if it fails, use whatever 'tabs' that we already have.
@@ -116,5 +124,13 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 	 */
 	public String getParameterizedSpecification() {
 		return parameterizedSpecification;
+	}
+
+	public String getFirstDelimiter() {
+		return firstDelimiter;
+	}
+
+	public String getParameterDelimiter() {
+		return parameterDelimiter;
 	}
 }

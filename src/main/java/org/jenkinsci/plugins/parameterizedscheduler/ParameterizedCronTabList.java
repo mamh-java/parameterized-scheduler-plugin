@@ -24,10 +24,13 @@ public class ParameterizedCronTabList {
 	}
 
 	public static ParameterizedCronTabList create(String cronTabSpecification) throws ANTLRException {
-		return create(cronTabSpecification, null);
+		return create(cronTabSpecification, ParameterParser.PARAMETER_SEPARATOR, ParameterParser.PAIR_SEPARATOR, null);
+	}
+	public static ParameterizedCronTabList create(String cronTabSpecification, String firstDelimiter, String parameterDelimiter) throws ANTLRException {
+		return create(cronTabSpecification, firstDelimiter, parameterDelimiter, null);
 	}
 
-	public static ParameterizedCronTabList create(String cronTabSpecification, Hash hash) throws ANTLRException {
+	public static ParameterizedCronTabList create(String cronTabSpecification, String firstDelimiter, String parameterDelimiter, Hash hash) throws ANTLRException {
 		List<ParameterizedCronTab> result = new ArrayList<>();
 		int lineNumber = 0;
 		String timezone = null;
@@ -42,7 +45,8 @@ public class ParameterizedCronTabList {
 					}
 				} else {
 					try {
-						result.add(ParameterizedCronTab.create(line, lineNumber, hash, timezone));
+						ParameterizedCronTab cronTab = ParameterizedCronTab.create(line, lineNumber, firstDelimiter, parameterDelimiter, hash, timezone);
+						result.add(cronTab);
 					} catch (ANTLRException e) {
 						throw new ANTLRException(String.format("Invalid input: \"%s\": %s", line, e.toString()), e);
 					}

@@ -9,6 +9,7 @@ import antlr.ANTLRException;
 import hudson.scheduler.CronTab;
 import hudson.scheduler.CronTabList;
 import hudson.scheduler.Hash;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * this is a copy of {@link CronTab} with added parameters map support
@@ -34,19 +35,28 @@ public class ParameterizedCronTab {
 	 *      Used to spread out token like "@daily". Null to preserve the legacy behaviour
 	 *      of not spreading it out at all.
 	 */
-	public static ParameterizedCronTab create(String line, int lineNumber, Hash hash, String timezone) throws ANTLRException {
+	public static ParameterizedCronTab create(String line, int lineNumber, String firstDelimiter, String parameterDelimiter, Hash hash, String timezone) throws ANTLRException {
+		if(StringUtils.isEmpty(firstDelimiter)){
+			firstDelimiter = ParameterParser.PARAMETER_SEPARATOR;
+		}
+		if(StringUtils.isEmpty(parameterDelimiter)){
+			parameterDelimiter = ParameterParser.PAIR_SEPARATOR;
+		}
 		Map<String, String> parameters = new HashMap<>();
-		int firstPercentIdx = line.indexOf("%");
+		int firstPercentIdx = line.indexOf(firstDelimiter);
 		if(firstPercentIdx != -1) {
 			String cronLinePart = line.substring(0, firstPercentIdx).trim();
 			String paramsLinePart = line.substring(firstPercentIdx + 1).trim();
 			CronTab cronTab = new CronTab(cronLinePart, lineNumber, hash, timezone);
-			parameters = new ParameterParser().parse(paramsLinePart);
+			parameters = new ParameterParser().parse(paramsLinePart, parameterDelimiter);
 			return new ParameterizedCronTab(cronTab, parameters);
 		} else {
 			CronTab cronTab = new CronTab(line, lineNumber, hash, timezone);
 			return new ParameterizedCronTab(cronTab, parameters);
 		}
+	}
+	public static ParameterizedCronTab create(String line, int lineNumber, Hash hash, String timezone) throws ANTLRException {
+		return create(line, lineNumber,  ParameterParser.PARAMETER_SEPARATOR,  ParameterParser.PAIR_SEPARATOR, hash, timezone);
 	}
 
 	public Map<String, String> getParameterValues() {
