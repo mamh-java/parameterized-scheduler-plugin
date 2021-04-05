@@ -1,6 +1,7 @@
 package org.jenkinsci.plugins.parameterizedscheduler;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 import hudson.model.ParametersDefinitionProperty;
 import org.apache.commons.lang.StringUtils;
 
@@ -14,9 +15,9 @@ public class ParameterParser {
 	/**
 	 * if ever changed, documentation and messages will need to be updated as well
 	 */
-	private static final String PARAMETER_SEPARATOR = "%";
-	private static final String NAME_VALUE_SEPARATOR = "=";
-	private static final String PAIR_SEPARATOR = ";";
+	protected static final String PARAMETER_SEPARATOR = "%";
+	protected static final String NAME_VALUE_SEPARATOR = "=";
+	protected static final String PAIR_SEPARATOR = ";";
 
 	/**
 	 * Parses a string with key value pairs
@@ -33,6 +34,21 @@ public class ParameterParser {
 			clean = clean.substring(0, clean.length() - 1);
 		}
 		return Splitter.on(PAIR_SEPARATOR).trimResults().withKeyValueSeparator(Splitter.on(NAME_VALUE_SEPARATOR).limit(2)).split(clean);
+	}
+
+	public Map<String, String> parse(String nameValuePairFormattedString, String paramdelimiter) {
+		if(StringUtils.isEmpty(paramdelimiter)){
+			return parse(nameValuePairFormattedString);
+		}
+
+		if (StringUtils.isBlank(nameValuePairFormattedString)) {//
+			return Maps.<String, String> newHashMap();
+		}
+		String clean = nameValuePairFormattedString.trim();
+		if (nameValuePairFormattedString.endsWith(paramdelimiter)) {
+			clean = clean.substring(0, clean.length() - 1);
+		}
+		return Splitter.on(paramdelimiter).trimResults().withKeyValueSeparator(NAME_VALUE_SEPARATOR).split(clean);
 	}
 
 	@CheckForNull

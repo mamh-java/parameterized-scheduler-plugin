@@ -32,11 +32,19 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 	private static final Logger LOGGER = Logger.getLogger(ParameterizedTimerTrigger.class.getName());
 	private transient ParameterizedCronTabList cronTabList;
 	private final String parameterizedSpecification;
+	private final String firstSep;
+	private final String paramSep;
 
 	@DataBoundConstructor
-	public ParameterizedTimerTrigger(String parameterizedSpecification) throws ANTLRException {
+	public ParameterizedTimerTrigger(String parameterizedSpecification, String firstSep, String paramSep) throws ANTLRException {
 		this.parameterizedSpecification = parameterizedSpecification;
-		this.cronTabList = ParameterizedCronTabList.create(parameterizedSpecification);
+		this.firstSep = firstSep;
+		this.paramSep = paramSep;
+		this.cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, firstSep, paramSep);
+	}
+
+	public ParameterizedTimerTrigger(String parameterizedSpecification) throws ANTLRException {
+		this(parameterizedSpecification, ParameterParser.PARAMETER_SEPARATOR, ParameterParser.PAIR_SEPARATOR);
 	}
 
 	@Override
@@ -101,7 +109,7 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 		this.job = project;
 
 		try {// reparse the tabs with the job as the hash
-			cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, Hash.from(project.getFullName()));
+			cronTabList = ParameterizedCronTabList.create(parameterizedSpecification, firstSep, paramSep, Hash.from(project.getFullName()));
 		} catch (ANTLRException e) {
 			// this shouldn't fail because we've already parsed stuff in the constructor,
 			// so if it fails, use whatever 'tabs' that we already have.
@@ -117,4 +125,12 @@ public class ParameterizedTimerTrigger extends Trigger<Job> {
 	public String getParameterizedSpecification() {
 		return parameterizedSpecification;
 	}
+
+    public String getFirstSep() {
+        return firstSep;
+    }
+
+    public String getParamSep() {
+        return paramSep;
+    }
 }
