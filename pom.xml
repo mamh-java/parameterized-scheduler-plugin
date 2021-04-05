@@ -17,7 +17,7 @@
 
 	<properties>
 		<revision>1.0</revision>
-		<changelist>-SNAPSHOT</changelist>
+		<changelist></changelist>
 		<gitHubRepo>mamh-java/parameterized-scheduler-plugin</gitHubRepo>
 		<java.level>8</java.level>
 		<jenkins.version>2.277.1</jenkins.version>
