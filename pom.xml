@@ -17,7 +17,7 @@
 
 	<properties>
 		<revision>1.1</revision>
-		<changelist>-SNAPSHOT</changelist>
+		<changelist></changelist>
 		<gitHubRepo>mamh-java/parameterized-scheduler-plugin</gitHubRepo>
 		<java.level>8</java.level>
 		<jenkins.version>2.277.1</jenkins.version>
@@ -45,7 +45,7 @@
 		<connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/${gitHubRepo}.git</developerConnection>
 		<url>https://github.com/${gitHubRepo}</url>
-		<tag>${scmTag}</tag>
+		<tag>parameterized-scheduler-1.1</tag>
 	</scm>
 
 	<repositories>
