@@ -1,28 +1,28 @@
 package org.jenkinsci.plugins.parameterizedscheduler;
 
 import net.sf.json.JSONObject;
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload2.core.FileItem;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.BindInterceptor;
 import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.WebApp;
 import org.kohsuke.stapler.bind.BoundObjectTable;
 import org.kohsuke.stapler.lang.Klass;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
 import java.io.BufferedReader;
 import java.lang.reflect.Type;
 import java.security.Principal;
@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class ParameterizedStaplerRequest implements StaplerRequest {
+public class ParameterizedStaplerRequest implements StaplerRequest2 {
 
 	private final String value;
 
@@ -481,22 +481,22 @@ public class ParameterizedStaplerRequest implements StaplerRequest {
 	}
 
 	@Override
-	public boolean checkIfModified(long timestampOfResource, StaplerResponse rsp) {
+	public boolean checkIfModified(long timestampOfResource, StaplerResponse2 rsp) {
 		return false;
 	}
 
 	@Override
-	public boolean checkIfModified(Date timestampOfResource, StaplerResponse rsp) {
+	public boolean checkIfModified(Date timestampOfResource, StaplerResponse2 rsp) {
 		return false;
 	}
 
 	@Override
-	public boolean checkIfModified(Calendar timestampOfResource, StaplerResponse rsp) {
+	public boolean checkIfModified(Calendar timestampOfResource, StaplerResponse2 rsp) {
 		return false;
 	}
 
 	@Override
-	public boolean checkIfModified(long timestampOfResource, StaplerResponse rsp, long expiration) {
+	public boolean checkIfModified(long timestampOfResource, StaplerResponse2 rsp, long expiration) {
 		return false;
 	}
 
@@ -561,7 +561,12 @@ public class ParameterizedStaplerRequest implements StaplerRequest {
 	}
 
 	@Override
-	public FileItem getFileItem(String name) {
+	public FileItem getFileItem2(String name) {
+		return null;
+	}
+
+	@Override
+	public org.apache.commons.fileupload.FileItem getFileItem(String name) {
 		return null;
 	}
 
@@ -577,6 +582,11 @@ public class ParameterizedStaplerRequest implements StaplerRequest {
 
 	@Override
 	public String createJavaScriptProxy(Object toBeExported) {
+		return null;
+	}
+
+	@Override
+	public RenderOnDemandParameters createJavaScriptProxyParameters(Object toBeExported) {
 		return null;
 	}
 

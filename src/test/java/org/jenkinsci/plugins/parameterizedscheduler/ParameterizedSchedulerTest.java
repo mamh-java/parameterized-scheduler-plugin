@@ -18,7 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,13 +149,13 @@ public class ParameterizedSchedulerTest {
 
         @CheckForNull
         @Override
-        public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
+        public ParameterValue createValue(StaplerRequest2 staplerRequest, JSONObject jsonObject) {
             return null;
         }
 
         @CheckForNull
         @Override
-        public ParameterValue createValue(StaplerRequest staplerRequest) {
+        public ParameterValue createValue(StaplerRequest2 staplerRequest) {
             return null;
         }
     }
