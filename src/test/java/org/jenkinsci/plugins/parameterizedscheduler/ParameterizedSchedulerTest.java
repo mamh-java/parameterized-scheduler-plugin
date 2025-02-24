@@ -14,10 +14,10 @@ import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 import org.kohsuke.stapler.StaplerRequest2;
 
 import java.util.ArrayList;
@@ -30,13 +30,11 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
-public class ParameterizedSchedulerTest {
+@WithJenkins
+class ParameterizedSchedulerTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
-
-    @Test
-    public void freestyle() throws Exception {
+	@Test
+	void freestyle(JenkinsRule r) throws Exception {
         FreeStyleProject p = r.createFreeStyleProject();
         p.addProperty(new ParametersDefinitionProperty(new StringParameterDefinition("foo", "lol")));
         assertThat(p.getLastCompletedBuild(), is(nullValue()));
@@ -54,8 +52,8 @@ public class ParameterizedSchedulerTest {
         assertThat(values, containsInAnyOrder("bar", "boo"));
     }
 
-    @Test
-    public void pipeline() throws Exception {
+	@Test
+	void pipeline(JenkinsRule r) throws Exception {
         WorkflowJob p = r.createProject(WorkflowJob.class);
         p.setDefinition(new CpsFlowDefinition("", true));
         WorkflowRun wfr = p.scheduleBuild2(0).get();
@@ -73,17 +71,18 @@ public class ParameterizedSchedulerTest {
         assertThat(values, containsInAnyOrder("bar", "boo"));
     }
 
-    @Test
-    public void scripted() throws Exception {
+	@Test
+	void scripted(JenkinsRule r) throws Exception {
         WorkflowJob p = r.createProject(WorkflowJob.class);
-        p.setDefinition(new CpsFlowDefinition("properties([\n" +
-                "  parameters([\n" +
-                "    string(name: 'foo', defaultValue: 'lol')\n" +
-                "  ]),\n" +
-                "  pipelineTriggers([\n" +
-                "    parameterizedCron('* * * * *%foo=bar\\n*/1 * * * *%foo=boo')\n" +
-                "  ])\n" +
-                "])", true));
+        p.setDefinition(new CpsFlowDefinition("""
+                properties([
+                  parameters([
+                    string(name: 'foo', defaultValue: 'lol')
+                  ]),
+                  pipelineTriggers([
+                    parameterizedCron('* * * * *%foo=bar\\n*/1 * * * *%foo=boo')
+                  ])
+                ])""", true));
         WorkflowRun wfr = r.buildAndAssertSuccess(p);
         new Cron().doRun();
         r.waitUntilNoActivity();
@@ -95,25 +94,26 @@ public class ParameterizedSchedulerTest {
         assertThat(values, containsInAnyOrder("bar", "boo"));
     }
 
-    @Test
-    public void declarative() throws Exception {
+	@Test
+	void declarative(JenkinsRule r) throws Exception {
         WorkflowJob p = r.createProject(WorkflowJob.class);
-        p.setDefinition(new CpsFlowDefinition("pipeline {\n" +
-                "    agent any\n" +
-                "    parameters {\n" +
-                "      string(name: 'foo', defaultValue: 'lol')\n" +
-                "    }\n" +
-                "    triggers {\n" +
-                "        parameterizedCron('* * * * *%foo=bar\\n*/1 * * * *%foo=boo')\n" +
-                "    }\n" +
-                "    stages {\n" +
-                "        stage('Test') {\n" +
-                "            steps {\n" +
-                "                echo 'test'\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "}", true));
+        p.setDefinition(new CpsFlowDefinition("""
+                pipeline {
+                    agent any
+                    parameters {
+                      string(name: 'foo', defaultValue: 'lol')
+                    }
+                    triggers {
+                        parameterizedCron('* * * * *%foo=bar\\n*/1 * * * *%foo=boo')
+                    }
+                    stages {
+                        stage('Test') {
+                            steps {
+                                echo 'test'
+                            }
+                        }
+                    }
+                }""", true));
         WorkflowRun wfr = r.buildAndAssertSuccess(p);
         new Cron().doRun();
         r.waitUntilNoActivity();
@@ -125,9 +125,9 @@ public class ParameterizedSchedulerTest {
         assertThat(values, containsInAnyOrder("bar", "boo"));
     }
 
-    @Test
-    @Issue("JENKINS-49372")
-    public void nullValueCreated() throws Exception {
+	@Test
+	@Issue("JENKINS-49372")
+	void nullValueCreated(JenkinsRule r) throws Exception {
         FreeStyleProject p = r.createFreeStyleProject();
         p.addProperty(new ParametersDefinitionProperty(new NullParameterDefinition("foo")));
         assertThat(p.getLastCompletedBuild(), is(nullValue()));
