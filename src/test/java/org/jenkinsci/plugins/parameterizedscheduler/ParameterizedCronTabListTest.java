@@ -3,10 +3,14 @@ package org.jenkinsci.plugins.parameterizedscheduler;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,45 +19,44 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ParameterizedCronTabListTest {
+@ExtendWith(MockitoExtension.class)
+class ParameterizedCronTabListTest {
 	private static final Locale defaultLocale = Locale.getDefault();
 	@Mock
 	private ParameterizedCronTab mockParameterizedCronTab;
 	@Mock
 	private ParameterizedCronTab mockParameterizedCronTabToo;
 
-	@BeforeClass
-	public static void initLocale() {
+	@BeforeAll
+	static void initLocale() {
 		Locale.setDefault(Locale.ENGLISH);
 	}
 
-	@AfterClass
-	public static void resetLocale() {
+	@AfterAll
+	static void resetLocale() {
 		Locale.setDefault(defaultLocale);
 	}
 
 	@Test
-	public void create() throws Exception {
+	void create() {
 		ParameterizedCronTabList testObject = ParameterizedCronTabList.create("* * * * *%foo=bar");
-		assertTrue(testObject.checkSanity(), testObject.checkSanity().startsWith("Do you really mean \"every minute\""));
+		assertTrue(testObject.checkSanity().startsWith("Do you really mean \"every minute\""), testObject.checkSanity());
 		List<ParameterizedCronTab> actualCronTabs = testObject.check(new GregorianCalendar());
 		assertThat(actualCronTabs.size(), is(1));
 		assertEquals(Collections.singletonMap("foo", "bar"), actualCronTabs.get(0).getParameterValues());
 	}
 
 	@Test
-	public void createMultiple() throws Exception {
+	void createMultiple() {
 		ParameterizedCronTabList testObject = ParameterizedCronTabList.create("* * * * *%foo=bar\n*/1 * * * *%bar=bar");
-		assertTrue(testObject.checkSanity(), testObject.checkSanity().startsWith("Do you really mean \"every minute\""));
+		assertTrue(testObject.checkSanity().startsWith("Do you really mean \"every minute\""), testObject.checkSanity());
 		List<ParameterizedCronTab> actualCronTabs = testObject.check(new GregorianCalendar());
 		assertThat(actualCronTabs.size(), is(2));
 		assertEquals(Collections.singletonMap("foo", "bar"), actualCronTabs.get(0).getParameterValues());
@@ -61,38 +64,38 @@ public class ParameterizedCronTabListTest {
 	}
 
 	@Test
-	public void check_Delegates_ReturnsNull() {
+	void check_Delegates_ReturnsNull() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 		GregorianCalendar testCalendar = new GregorianCalendar();
 		List<ParameterizedCronTab> tabList = testObject.check(testCalendar);
 		assertThat(tabList, is(empty()));
 
-		Mockito.verify(mockParameterizedCronTab).check(testCalendar);
-		Mockito.verify(mockParameterizedCronTabToo).check(testCalendar);
+		verify(mockParameterizedCronTab).check(testCalendar);
+		verify(mockParameterizedCronTabToo).check(testCalendar);
 	}
 
 	@Test
-	public void check_Delegates_ReturnsSame() {
+	void check_Delegates_ReturnsSame() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 		GregorianCalendar testCalendar = new GregorianCalendar();
 
-		Mockito.when(mockParameterizedCronTab.check(testCalendar)).thenReturn(true);
-		Mockito.when(mockParameterizedCronTabToo.check(testCalendar)).thenReturn(false);
+		when(mockParameterizedCronTab.check(testCalendar)).thenReturn(true);
+		when(mockParameterizedCronTabToo.check(testCalendar)).thenReturn(false);
 		List<ParameterizedCronTab> tabList = testObject.check(testCalendar);
 		assertThat(tabList.size(), is(1));
 		assertSame(mockParameterizedCronTab, tabList.get(0));
 	}
 
 	@Test
-	public void check_Delegates_ReturnsBoth() {
+	void check_Delegates_ReturnsBoth() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 		GregorianCalendar testCalendar = new GregorianCalendar();
 
-		Mockito.when(mockParameterizedCronTab.check(testCalendar)).thenReturn(true);
-		Mockito.when(mockParameterizedCronTabToo.check(testCalendar)).thenReturn(true);
+		when(mockParameterizedCronTab.check(testCalendar)).thenReturn(true);
+		when(mockParameterizedCronTabToo.check(testCalendar)).thenReturn(true);
 		List<ParameterizedCronTab> tabList = testObject.check(testCalendar);
 		assertThat(tabList.size(), is(2));
 
@@ -101,42 +104,42 @@ public class ParameterizedCronTabListTest {
 	}
 
 	@Test
-	public void checkSanity_Delegates_ReturnsNull() {
+	void checkSanity_Delegates_ReturnsNull() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 
 		assertNull(testObject.checkSanity());
 
-		Mockito.verify(mockParameterizedCronTab).checkSanity();
-		Mockito.verify(mockParameterizedCronTabToo).checkSanity();
+		verify(mockParameterizedCronTab).checkSanity();
+		verify(mockParameterizedCronTabToo).checkSanity();
 	}
 
 	@Test
-	public void checkSanity_Delegates_ReturnsSame_EarlyExit() {
+	void checkSanity_Delegates_ReturnsSame_EarlyExit() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 
 		String sanityValue = "foo";
-		Mockito.when(mockParameterizedCronTab.checkSanity()).thenReturn(sanityValue);
+		when(mockParameterizedCronTab.checkSanity()).thenReturn(sanityValue);
 		assertSame(sanityValue, testObject.checkSanity());
 
-		Mockito.verifyNoInteractions(mockParameterizedCronTabToo);
+		verifyNoInteractions(mockParameterizedCronTabToo);
 	}
 
 	@Test
-	public void checkSanity_Delegates_ReturnsSame() {
+	void checkSanity_Delegates_ReturnsSame() {
 		ParameterizedCronTabList testObject = new ParameterizedCronTabList(Arrays.asList(mockParameterizedCronTab,
 				mockParameterizedCronTabToo));
 
 		String sanityValue = "foo";
-		Mockito.when(mockParameterizedCronTabToo.checkSanity()).thenReturn(sanityValue);
+		when(mockParameterizedCronTabToo.checkSanity()).thenReturn(sanityValue);
 		assertSame(sanityValue, testObject.checkSanity());
 	}
 
 	@Test
-	public void create_with_timezone() throws Exception {
+	void create_with_timezone() {
 		ParameterizedCronTabList testObject = ParameterizedCronTabList.create("TZ=Australia/Sydney \n * * * * *%foo=bar");
-		assertTrue(testObject.checkSanity(), testObject.checkSanity().startsWith("Do you really mean \"every minute\""));
+		assertTrue(testObject.checkSanity().startsWith("Do you really mean \"every minute\""), testObject.checkSanity());
 		List<ParameterizedCronTab> actualCronTabs = testObject.check(new GregorianCalendar());
 		assertThat(actualCronTabs.size(), is(1));
 
@@ -144,9 +147,10 @@ public class ParameterizedCronTabListTest {
 		assertEquals(expected, actualCronTabs.get(0).getParameterValues());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void create_with_invalidTimezone() {
-		ParameterizedCronTabList.create("TZ=Dune/Arrakis \n * * * * *%foo=bar");
+	@Test
+	void create_with_invalidTimezone() {
+		assertThrows(IllegalArgumentException.class, () ->
+			ParameterizedCronTabList.create("TZ=Dune/Arrakis \n * * * * *%foo=bar"));
 	}
 
 }
